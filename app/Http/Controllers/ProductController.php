@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class ProductController extends Controller
 {
@@ -61,7 +62,26 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        
+        $productAux = Product::find($request->id);
+
+        if($productAux)
+        {
+            $productAux->name = $product->name;
+            $productAux->image = $product->image;
+            $productAux->description = $product->description;
+            $productAux->price = $product->price;
+            $productAux->quantity = $product->quantity;
+            $productAux->status = $product->status;
+
+            $productAux->save();
+            return response()->json([
+                'message' => 'Producto modificado correctamente'
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'El producto a modificar no fue encontrado'
+        ], 404);
     }
 
     /**
